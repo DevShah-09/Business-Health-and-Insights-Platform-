@@ -10,8 +10,8 @@ export function ChatBubble({ message }) {
         {/* Avatar */}
         <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${
           isUser 
-            ? 'bg-surface-muted text-surface-muted-foreground' 
-            : 'bg-gradient-to-br from-[#6366f1] to-[#8083ff] text-surface-foreground'
+            ? 'bg-[#edd6c1] text-[#714f3b]' 
+            : 'bg-gradient-to-br from-[#a35e30] to-[#804218] text-[#f9f9f8]'
         }`}>
           {isUser ? <User size={16} /> : <Bot size={16} />}
         </div>
@@ -23,8 +23,8 @@ export function ChatBubble({ message }) {
           </span>
           <div className={`rounded-2xl px-5 py-3.5 text-sm leading-relaxed shadow-sm ${
             isUser 
-              ? 'bg-surface-muted text-surface-foreground rounded-tr-sm' 
-              : 'bg-gradient-to-br from-[#171f33] to-[#131b2e] border border-surface-border text-white rounded-tl-sm shadow-[0_4px_20px_rgba(0,0,0,0.2)]'
+              ? 'bg-[#e2c5ae] text-[#332117] rounded-tr-sm border border-[#d2b399]' 
+              : 'bg-gradient-to-br from-[#dfcdb9] to-[#d3bda6] border border-[#c4a991] text-[#2b1b11] rounded-tl-sm shadow-[0_4px_20px_rgba(0,0,0,0.15)]'
           }`}>
             {message.content.split('\n').map((line, i) => (
               <p key={i} className={i > 0 ? 'mt-2' : ''}>

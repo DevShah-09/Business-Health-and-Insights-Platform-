@@ -4,7 +4,7 @@ import { useInsights } from '../hooks/useInsights';
 import { Badge } from '../components/ui/Badge';
 import { Card } from '../components/ui/Card';
 import { ChatWindow } from '../components/chat/ChatWindow';
-import { TopBar } from '../components/dashboard/TopBar';
+
 
 export default function Insights() {
   const { insights, loading, refetch } = useInsights();
@@ -17,7 +17,7 @@ export default function Insights() {
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-surface)] overflow-y-auto">
-      <TopBar />
+
 
 
       <main className="p-6 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-6 max-w-[1600px] w-full mx-auto h-[calc(100vh-80px)]">

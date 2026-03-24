@@ -3,7 +3,7 @@ import { TrendingUp, TrendingDown, AlertCircle, Activity, Save, RefreshCw, India
 import { useSimulation } from '../hooks/useSimulation';
 import { useAnalytics } from '../hooks/useAnalytics';
 import { Card } from '../components/ui/Card';
-import { TopBar } from '../components/dashboard/TopBar';
+
 
 const BUSINESS_ID = '550e8400-e29b-41d4-a716-446655440001';
 
@@ -65,7 +65,7 @@ export default function Simulation() {
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-surface)] overflow-y-auto">
-      <TopBar />
+
       
       {/* Page Header */}
       <div className="px-8 py-6 border-b border-surface-border/30 bg-surface-card/50">

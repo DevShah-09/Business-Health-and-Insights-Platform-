@@ -7,9 +7,26 @@ from datetime import datetime
 from openai import AsyncOpenAI
 import json
 import os
+from dotenv import load_dotenv
 
-# Initialize OpenAI client
-openai_client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY", ""))
+load_dotenv()
+
+# Check for OpenRouter API Key first
+or_key = os.getenv("OPENROUTER_API_KEY", "")
+oa_key = os.getenv("OPENAI_API_KEY", "")
+
+if or_key:
+    # Use OpenRouter
+    openai_client = AsyncOpenAI(
+        api_key=or_key,
+        base_url="https://openrouter.ai/api/v1"
+    )
+elif oa_key:
+    # Use OpenAI directly
+    openai_client = AsyncOpenAI(api_key=oa_key)
+else:
+    openai_client = None
+
 
 
 def _build_financial_context(business_name: str, summary: dict) -> str:
@@ -85,9 +102,12 @@ async def chat_with_ai(
         # Add current message
         messages.append({"role": "user", "content": user_message})
         
+        # Determine which model to use
+        model_name = "google/gemini-2.5-flash" if or_key else "gpt-3.5-turbo"
+
         # Call OpenAI API
         response = await openai_client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model=model_name,
             messages=messages,
             temperature=0.7,
             max_tokens=500

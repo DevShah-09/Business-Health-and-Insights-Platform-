@@ -41,6 +41,7 @@ async def create_transaction(
         category=category,
         description=payload.description,
         transaction_date=payload.transaction_date,
+        status=payload.status or "completed",
         source="manual"
     )
     db.add(tx)
@@ -117,6 +118,7 @@ async def update_transaction(
     tx.category = category
     tx.description = payload.description
     tx.transaction_date = payload.transaction_date
+    tx.status = payload.status or "completed"
     
     await db.commit()
     await db.refresh(tx)

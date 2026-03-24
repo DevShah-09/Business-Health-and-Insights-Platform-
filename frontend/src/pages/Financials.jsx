@@ -5,10 +5,9 @@ import { Card } from '../components/ui/Card';
 
 import { PnLChart } from '../components/charts/PnLChart';
 import { CashFlowChart } from '../components/charts/CashFlowChart';
-import { ExpensePieChart } from '../components/charts/ExpensePieChart';
 import { CategoryBarChart } from '../components/charts/CategoryBarChart';
 import { MetricCard } from '../components/dashboard/MetricCard';
-import { TopBar } from '../components/dashboard/TopBar';
+
 
 export default function Financials() {
   const {
@@ -28,7 +27,7 @@ export default function Financials() {
   if (loading) {
     return (
       <div className="flex flex-col h-full bg-[var(--color-surface)]">
-        <TopBar />
+
         <div className="px-8 py-6 border-b border-surface-border/30 bg-surface-card/50">
           <h1 className="text-3xl font-bold text-surface-foreground mb-2">Analytics</h1>
           <p className="text-sm text-surface-muted-foreground">Detailed financial analysis and KPIs</p>
@@ -45,7 +44,7 @@ export default function Financials() {
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-surface)] overflow-y-auto">
-      <TopBar />
+
       
       {/* Page Header */}
       <div className="px-8 py-6 border-b border-surface-border/30 bg-surface-card/50">
@@ -143,30 +142,19 @@ export default function Financials() {
           </Card>
         </div>
 
-        {/* Cash Flow Trend, Expense Breakdown & Category Spending */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-1">
-            <h3 className="text-sm font-semibold text-surface-foreground mb-4">Expense Distribution</h3>
-            {expenseBreakdown && <ExpensePieChart data={expenseBreakdown} />}
-          </Card>
-
-          <Card className="lg:col-span-2">
-            <h3 className="text-sm font-semibold text-surface-foreground mb-4">Category Spending</h3>
-            {expenseBreakdown && (
-              <CategoryBarChart 
-                data={expenseBreakdown.map(item => ({
-                  name: item.category,
-                  expenses: item.amount
-                }))} 
-              />
-            )}
-          </Card>
-        </div>
-
+        {/* Category Spending */}
         <Card>
-          <h3 className="text-sm font-semibold text-surface-foreground mb-4">Cash Flow Trend</h3>
-          {cashFlowTrend && <CashFlowChart data={cashFlowTrend} />}
+          <h3 className="text-sm font-semibold text-surface-foreground mb-4">Category Spending</h3>
+          {expenseBreakdown && (
+            <CategoryBarChart 
+              data={expenseBreakdown.map(item => ({
+                name: item.category,
+                expenses: item.amount
+              }))} 
+            />
+          )}
         </Card>
+
 
         {/* Burn Rate & Income Breakdown */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

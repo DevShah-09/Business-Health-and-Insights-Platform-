@@ -267,15 +267,14 @@ def get_burn_rate(transactions: list[Any], days: int = 30) -> dict:
     recent_df = df[df["transaction_date"] >= recent_threshold]
     
     total_expenses = float(recent_df[recent_df["type"] == "expense"]["amount"].sum())
-    days_in_period = max(1, (recent_df["transaction_date"].max() - recent_df["transaction_date"].min()).days + 1)
     
-    daily_burn = total_expenses / days_in_period
+    daily_burn = total_expenses / days if days > 0 else 0
     monthly_burn = daily_burn * 30
     
     return {
         "daily_burn_rate": round(daily_burn, 2),
         "monthly_burn_rate": round(monthly_burn, 2),
-        "period_days": days_in_period,
+        "period_days": days,
     }
 
 

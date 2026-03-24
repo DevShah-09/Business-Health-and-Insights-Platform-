@@ -3,14 +3,14 @@ import { ShieldAlert, TrendingUp, CheckCircle2 } from 'lucide-react';
 import { useForecast } from '../hooks/useForecast';
 import { Card } from '../components/ui/Card';
 import { ForecastChart } from '../components/charts/ForecastChart';
-import { TopBar } from '../components/dashboard/TopBar';
+
 
 export default function Forecast() {
   const { forecast, loading } = useForecast();
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-surface)] overflow-y-auto">
-      <TopBar />
+
 
 
       <main className="p-6 grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-[1600px] w-full mx-auto">

@@ -40,6 +40,7 @@ export default function Transactions() {
     description: '',
     amount: '',
     date: new Date().toISOString().split('T')[0],
+    due_date: '',
     status: 'pending'
   });
   const [uploadType, setUploadType] = useState('csv');
@@ -73,7 +74,7 @@ export default function Transactions() {
       amount: Number(pendingFormData.amount),
       transaction_date: pendingFormData.date || new Date().toISOString().split('T')[0],
     });
-    setPendingFormData((f) => ({ ...f, description: '', amount: '', date: new Date().toISOString().split('T')[0] }));
+    setPendingFormData((f) => ({ ...f, description: '', amount: '', date: new Date().toISOString().split('T')[0], due_date: '', status: 'pending' }));
   };
 
   const handleAdd = async (e) => {
@@ -200,6 +201,23 @@ export default function Transactions() {
                 value={pendingFormData.amount}
                 onChange={(e) => setPendingFormData((f) => ({ ...f, amount: e.target.value }))}
               />
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  label="Due Date"
+                  type="date"
+                  value={pendingFormData.due_date}
+                  onChange={(e) => setPendingFormData((f) => ({ ...f, due_date: e.target.value }))}
+                />
+                <Select
+                  label="Status"
+                  value={pendingFormData.status}
+                  onChange={(e) => setPendingFormData((f) => ({ ...f, status: e.target.value }))}
+                  options={[
+                    { value: 'pending', label: 'Pending' },
+                    { value: 'completed', label: 'Completed' },
+                  ]}
+                />
+              </div>
               <Button type="submit" className="w-full justify-center bg-amber-600 hover:bg-amber-700" disabled={submitting}>
                 Record Pending
               </Button>
