@@ -7,7 +7,11 @@ import { ChatWindow } from '../components/chat/ChatWindow';
 import { TopBar } from '../components/dashboard/TopBar';
 
 export default function Insights() {
+<<<<<<< HEAD
   const { insights, loading, refetch } = useInsights();
+=======
+  const { insights, loading } = useInsights();
+>>>>>>> ff5355d3df9c89d77b889ad7199a02f8510ae0b4
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-surface)] overflow-y-auto">
@@ -18,6 +22,7 @@ export default function Insights() {
         
         {/* Left Panel: Insights List */}
         <div className="xl:col-span-3 space-y-4 overflow-y-auto pr-2 pb-6">
+<<<<<<< HEAD
           <div className="flex justify-between items-center mb-4 sticky top-0 bg-background py-2 z-10">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-surface-muted-foreground">
               Actionable Opportunities
@@ -44,6 +49,11 @@ export default function Insights() {
               )}
             </button>
           </div>
+=======
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-surface-muted-foreground mb-4 sticky top-0 bg-background py-2 z-10">
+            Actionable Opportunities
+          </h3>
+>>>>>>> ff5355d3df9c89d77b889ad7199a02f8510ae0b4
           
           {loading ? (
             <div className="space-y-4">

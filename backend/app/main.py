@@ -55,6 +55,7 @@ async def lifespan(app: FastAPI):
         existing_txs = result.scalars().all()
 
         if not existing_txs:
+<<<<<<< HEAD
             # Create sample transactions for demo data (spread across two months)
             today = date.today()
             last_month = today - timedelta(days=30)
@@ -73,6 +74,67 @@ async def lifespan(app: FastAPI):
                 Transaction(business_id=mock_business_id, type=TransactionType.EXPENSE, amount=Decimal("20000.00"), category="Salaries", description="Core Team", transaction_date=today - timedelta(days=1)),
                 Transaction(business_id=mock_business_id, type=TransactionType.EXPENSE, amount=Decimal("5000.00"), category="Software", description="SaaS Subscriptions", transaction_date=today - timedelta(days=10)),
                 Transaction(business_id=mock_business_id, type=TransactionType.EXPENSE, amount=Decimal("3000.00"), category="Operations", description="Cloud Infrastructure", transaction_date=today - timedelta(days=12)),
+=======
+            # Create sample transactions for demo data
+            today = date.today()
+            sample_txs = [
+                # Income transactions
+                Transaction(
+                    business_id=mock_business_id,
+                    type=TransactionType.INCOME,
+                    amount=Decimal("18500.00"),
+                    category="Services",
+                    description="Consulting Project - Alpha Corp",
+                    transaction_date=today - timedelta(days=30),
+                    source="manual",
+                ),
+                Transaction(
+                    business_id=mock_business_id,
+                    type=TransactionType.INCOME,
+                    amount=Decimal("22300.00"),
+                    category="Products",
+                    description="Product Sales - Batch #47",
+                    transaction_date=today - timedelta(days=25),
+                    source="manual",
+                ),
+                Transaction(
+                    business_id=mock_business_id,
+                    type=TransactionType.INCOME,
+                    amount=Decimal("15600.00"),
+                    category="Services",
+                    description="Consulting - Beta Solutions",
+                    transaction_date=today - timedelta(days=20),
+                    source="manual",
+                ),
+                # Expense transactions
+                Transaction(
+                    business_id=mock_business_id,
+                    type=TransactionType.EXPENSE,
+                    amount=Decimal("28000.00"),
+                    category="Salaries",
+                    description="Monthly Payroll",
+                    transaction_date=today - timedelta(days=28),
+                    source="manual",
+                ),
+                Transaction(
+                    business_id=mock_business_id,
+                    type=TransactionType.EXPENSE,
+                    amount=Decimal("8500.00"),
+                    category="Operations",
+                    description="Office Utilities & Rent",
+                    transaction_date=today - timedelta(days=27),
+                    source="manual",
+                ),
+                Transaction(
+                    business_id=mock_business_id,
+                    type=TransactionType.EXPENSE,
+                    amount=Decimal("12000.00"),
+                    category="Products",
+                    description="Inventory Purchase",
+                    transaction_date=today - timedelta(days=24),
+                    source="manual",
+                ),
+>>>>>>> ff5355d3df9c89d77b889ad7199a02f8510ae0b4
             ]
             
             for tx in sample_txs:

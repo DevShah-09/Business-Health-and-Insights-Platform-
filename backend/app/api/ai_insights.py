@@ -20,7 +20,10 @@ router = APIRouter()
 
 @router.get("/businesses/{business_id}/ai/insights")
 async def ai_insights(business_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
+<<<<<<< HEAD
     print(f"DEBUG: Generating insights for {business_id} using latest code v2")
+=======
+>>>>>>> ff5355d3df9c89d77b889ad7199a02f8510ae0b4
     biz = await db.get(Business, business_id)
     if not biz:
         raise HTTPException(status_code=404, detail="Business not found")
@@ -40,8 +43,11 @@ async def ai_insights(business_id: uuid.UUID, db: AsyncSession = Depends(get_db)
     summary = compute_financial_summary(transactions)
     expense_breakdown = get_expense_breakdown(transactions)
     income_breakdown = get_income_breakdown(transactions)
+<<<<<<< HEAD
     from app.services.financial_engine import get_monthly_pnl
     monthly_pnl = get_monthly_pnl(transactions)
+=======
+>>>>>>> ff5355d3df9c89d77b889ad7199a02f8510ae0b4
 
     return generate_business_insights({
         "summary": {
@@ -52,6 +58,7 @@ async def ai_insights(business_id: uuid.UUID, db: AsyncSession = Depends(get_db)
         },
         "expense_breakdown": expense_breakdown,
         "income_breakdown": income_breakdown,
+<<<<<<< HEAD
         "monthly_pnl": monthly_pnl,  # Pass historical trends
         "raw_transactions": [
             {
@@ -65,3 +72,8 @@ async def ai_insights(business_id: uuid.UUID, db: AsyncSession = Depends(get_db)
         "industry": biz.industry or "General",
     })
 
+=======
+        "business_name": biz.name or "Your Business",
+        "industry": biz.industry or "General",
+    })
+>>>>>>> ff5355d3df9c89d77b889ad7199a02f8510ae0b4
