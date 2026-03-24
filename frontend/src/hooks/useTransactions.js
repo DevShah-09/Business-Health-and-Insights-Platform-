@@ -2,7 +2,7 @@
  * useTransactions — fetches and manages transaction list
  */
 import { useState, useEffect, useCallback } from 'react';
-import { getTransactions, createTransaction, deleteTransaction, uploadTransactionFile } from '../services/transactionService';
+import { getTransactions, createTransaction, updateTransaction, deleteTransaction, uploadTransactionFile, uploadInvoice, uploadBankSMS, uploadUPILogs, autoCategorizeTransactions } from '../services/transactionService';
 
 const MOCK_TRANSACTIONS = [
   { id: 1, date: '2026-06-28', type: 'income', category: 'Services', description: 'Consulting Project - Alpha Corp', amount: 18500 },
@@ -40,7 +40,7 @@ export function useTransactions() {
   const addTransaction = async (data) => {
     setSubmitting(true);
     try {
-      const newTx = await createTransaction(data);
+      await createTransaction(data);
       // Refresh to ensure we have the latest transactions from backend
       fetchTransactions();
     } catch (err) {
@@ -51,10 +51,40 @@ export function useTransactions() {
     }
   };
 
-  const uploadFile = async (file) => {
+  const editTransaction = async (id, data) => {
     setSubmitting(true);
     try {
-      await uploadTransactionFile(file).catch(() => {});
+      await updateTransaction(id, data);
+      fetchTransactions();
+    } catch (err) {
+      console.error('Failed to update transaction:', err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const uploadFile = async (file, uploadType = 'csv') => {
+    setSubmitting(true);
+    try {
+      if (uploadType === 'csv') {
+        await uploadTransactionFile(file).catch(() => {});
+      } else if (uploadType === 'invoice') {
+        await uploadInvoice(file, true).catch(() => {});
+      } else if (uploadType === 'sms') {
+        await uploadBankSMS(file).catch(() => {});
+      } else if (uploadType === 'upi') {
+        await uploadUPILogs(file).catch(() => {});
+      }
+      fetchTransactions();
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const categorizeAll = async () => {
+    setSubmitting(true);
+    try {
+      await autoCategorizeTransactions().catch(() => {});
       fetchTransactions();
     } finally {
       setSubmitting(false);
@@ -66,5 +96,5 @@ export function useTransactions() {
     setTransactions((prev) => prev.filter((t) => t.id !== id));
   };
 
-  return { transactions, loading, submitting, addTransaction, uploadFile, removeTransaction };
+  return { transactions, loading, submitting, addTransaction, editTransaction, uploadFile, categorizeAll, removeTransaction };
 }

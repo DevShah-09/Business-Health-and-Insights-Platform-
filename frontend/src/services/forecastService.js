@@ -3,9 +3,20 @@
  */
 import api from './api';
 
-/** Get revenue / expense / cash-flow forecast */
-export const getForecast = () => api.get('/forecast').then((r) => r.data);
+const BUSINESS_ID = '550e8400-e29b-41d4-a716-446655440001';
 
-/** Run a what-if simulation: { sales_change_pct, expense_change_pct } */
-export const runSimulation = (params) =>
-  api.post('/simulate', params).then((r) => r.data);
+/** Get revenue / expense / cash-flow forecast */
+export const getForecast = (businessId = BUSINESS_ID, months = 6) => 
+  api.get(`/businesses/${businessId}/forecast?months=${months}`).then((r) => r.data);
+
+/** Simulate revenue change */
+export const getScenarioRevenue = (businessId = BUSINESS_ID, changePct) =>
+  api.get(`/businesses/${businessId}/scenario/revenue?change_pct=${changePct}`).then((r) => r.data);
+
+/** Simulate expense change */
+export const getScenarioExpense = (businessId = BUSINESS_ID, changePct) =>
+  api.get(`/businesses/${businessId}/scenario/expense?change_pct=${changePct}`).then((r) => r.data);
+
+/** Get batch of common scenarios */
+export const getScenarioBatch = (businessId = BUSINESS_ID) =>
+  api.get(`/businesses/${businessId}/scenario/batch`).then((r) => r.data);

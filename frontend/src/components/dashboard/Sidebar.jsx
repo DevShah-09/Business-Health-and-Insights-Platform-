@@ -1,79 +1,59 @@
-/**
- * Sidebar navigation component with React Router NavLinks
- */
-import React, { useState } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
-import {
-  LayoutDashboard, ArrowLeftRight, Lightbulb,
-  TrendingUp, Sliders, Bot, ChevronLeft, ChevronRight, BarChart3
-} from 'lucide-react';
 
 const NAV_ITEMS = [
-  { to: '/',            label: 'Dashboard',    icon: LayoutDashboard },
-  { to: '/transactions',label: 'Transactions', icon: ArrowLeftRight   },
-  { to: '/financials',  label: 'Financials',   icon: BarChart3        },
-  { to: '/insights',    label: 'AI Insights',  icon: Lightbulb        },
-  { to: '/forecast',    label: 'Forecast',     icon: TrendingUp       },
-  { to: '/simulation',  label: 'Simulation',   icon: Sliders          },
+  { to: '/',            label: 'Dashboard',    icon: 'dashboard' },
+  { to: '/transactions',label: 'Transactions', icon: 'receipt_long' },
+  { to: '/financials',  label: 'Analytics',    icon: 'analytics' },
+  { to: '/insights',    label: 'AI Insights',  icon: 'psychology' },
+  { to: '/forecast',    label: 'Forecast',     icon: 'trending_up' },
+  { to: '/simulation',  label: 'Simulation',   icon: 'sliders' },
 ];
 
 export function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
-
   return (
-    <aside
-      className={`relative flex flex-col bg-[#131b2e] transition-all duration-300 ${
-        collapsed ? 'w-16' : 'w-60'
-      }`}
-    >
-      {/* Logo */}
-      <div className={`flex items-center gap-3 px-4 py-5 ${collapsed ? 'justify-center' : ''}`}>
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#6366f1] to-[#8083ff]">
-          <Bot size={16} className="text-white" />
+    <aside className="h-screen w-64 shrink-0 overflow-y-auto z-50 bg-surface flex flex-col p-4 gap-2 border-r border-surface-border/50 transition-colors">
+      <div className="flex items-center gap-3 px-2 py-4 mb-6">
+        <div className="w-10 h-10 bg-brand flex items-center justify-center rounded-xl shadow-sm">
+          <span className="material-symbols-outlined text-white" style={{ fontVariationSettings: "'FILL' 1" }}>account_balance_wallet</span>
         </div>
-        {!collapsed && (
-          <div>
-            <p className="text-sm font-bold text-white leading-tight">Nebulon AI</p>
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest">Business Health</p>
-          </div>
-        )}
+        <div>
+          <h1 className="font-headline text-xl font-bold text-surface-foreground">FinSight</h1>
+          <p className="text-[10px] uppercase tracking-widest text-surface-muted-foreground font-bold">Ledger Artisan</p>
+        </div>
       </div>
-
-      {/* Nav Links */}
-      <nav className="flex flex-col gap-1 px-2 py-2 flex-1">
-        {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
+      <nav className="flex-1 space-y-1">
+        {NAV_ITEMS.map(({ to, label, icon }) => (
           <NavLink
             key={to}
             to={to}
             end={to === '/'}
             className={({ isActive }) =>
-              `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150 ${
+              `flex items-center gap-3 px-4 py-3 font-bold rounded-lg transition-all duration-300 ease-in-out ${
                 isActive
-                  ? 'bg-[#6366f1]/20 text-[#c0c1ff] shadow-[inset_0_0_0_1px_rgba(99,102,241,0.3)]'
-                  : 'text-slate-400 hover:bg-[#2d3449]/60 hover:text-slate-200'
-              } ${collapsed ? 'justify-center' : ''}`
+                  ? 'bg-surface-card text-brand shadow-sm'
+                  : 'text-surface-muted-foreground font-medium hover:bg-surface-border/50 hover:text-surface-foreground'
+              }`
             }
-            title={collapsed ? label : undefined}
           >
-            <Icon size={18} className="shrink-0" />
-            {!collapsed && <span>{label}</span>}
+            {({ isActive }) => (
+              <>
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>{icon}</span>
+                <span className="font-sans text-sm">{label}</span>
+              </>
+            )}
           </NavLink>
         ))}
       </nav>
-
-      {/* Collapse toggle */}
-      <button
-        onClick={() => setCollapsed((c) => !c)}
-        className="absolute -right-3 top-20 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-[#2d3449] text-slate-400 shadow hover:text-white transition"
-      >
-        {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
-      </button>
-
-      {/* Footer */}
-      <div className={`px-4 py-4 border-t border-[#464554]/20 ${collapsed ? 'flex justify-center' : ''}`}>
-        {!collapsed && (
-          <p className="text-[10px] text-slate-600 uppercase tracking-wider">SME Platform v1.0</p>
-        )}
+      <div className="mt-auto pt-4 border-t border-surface-border/50">
+        <a className="flex items-center gap-3 px-4 py-3 text-surface-muted-foreground font-medium hover:bg-surface-border/50 hover:text-surface-foreground rounded-lg transition-all duration-300 ease-in-out cursor-pointer">
+          <span className="material-symbols-outlined">help</span>
+          <span className="font-sans text-sm">Help Center</span>
+        </a>
+        <a className="flex items-center gap-3 px-4 py-3 text-surface-muted-foreground font-medium hover:bg-surface-border/50 hover:text-error rounded-lg transition-all duration-300 ease-in-out cursor-pointer">
+          <span className="material-symbols-outlined text-error">logout</span>
+          <span className="font-sans text-sm">Logout</span>
+        </a>
       </div>
     </aside>
   );

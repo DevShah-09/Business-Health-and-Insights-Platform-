@@ -7,7 +7,7 @@ import { RevenueExpenseChart } from '../components/charts/RevenueExpenseChart';
 import { CategoryBarChart } from '../components/charts/CategoryBarChart';
 import { ExpensePieChart } from '../components/charts/ExpensePieChart';
 import { AlertList } from '../components/alerts/AlertList';
-import { TopBar } from '../components/dashboard/TopBar';
+
 
 export default function Dashboard() {
   const { data, loading } = useAnalytics();
@@ -15,7 +15,7 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-surface)] overflow-y-auto">
-      <TopBar title="Overview" subtitle="Real-time financial pulse" />
+
 
       <main className="p-6 space-y-6 max-w-[1600px] w-full mx-auto">
         {/* KPIs */}
@@ -50,7 +50,7 @@ export default function Dashboard() {
               loading={loading}
             />
             <div className="flex flex-col gap-4">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500">Active Alerts</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-surface-muted-foreground">Active Alerts</h3>
               <AlertList alerts={alerts} loading={alertsLoading} />
             </div>
           </div>

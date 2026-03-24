@@ -26,7 +26,9 @@ const VARIANTS = {
 };
 
 export function AlertCard({ alert, onDismiss }) {
-  const { bg, border, text, iconText, Icon } = VARIANTS[alert.type] || VARIANTS.info;
+  // Support both 'severity' and 'type' fields for backwards compatibility
+  const severity = alert.severity || alert.type || 'info';
+  const { bg, border, text, iconText, Icon } = VARIANTS[severity] || VARIANTS.info;
 
   return (
     <div className={`relative flex items-start gap-4 rounded-xl border p-4 ${bg} ${border}`}>
@@ -35,12 +37,12 @@ export function AlertCard({ alert, onDismiss }) {
       </div>
       <div className="flex-1">
         <h4 className={`text-sm font-semibold ${text}`}>{alert.title}</h4>
-        <p className="mt-1 text-sm text-slate-300 leading-snug">{alert.message}</p>
+        <p className="mt-1 text-sm text-surface-muted-foreground leading-snug">{alert.message}</p>
       </div>
       {onDismiss && (
         <button
           onClick={() => onDismiss(alert.id)}
-          className="shrink-0 rounded-lg p-1 text-slate-400 hover:bg-white/5 hover:text-white"
+          className="shrink-0 rounded-lg p-1 text-surface-muted-foreground hover:bg-white/5 hover:text-surface-foreground"
         >
           <X size={16} />
         </button>

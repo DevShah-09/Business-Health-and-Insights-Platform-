@@ -5,7 +5,7 @@ import {
 
 export function ForecastChart({ data, loading }) {
   if (loading || !data) {
-    return <div className="h-[400px] w-full animate-pulse bg-[#171f33] rounded-xl" />;
+    return <div className="h-[400px] w-full animate-pulse bg-surface-card rounded-xl" />;
   }
 
   // Find the index where prediction starts (assuming last 3 months are predicted for mockup purposes, or data could supply 'isPredicted' flag)

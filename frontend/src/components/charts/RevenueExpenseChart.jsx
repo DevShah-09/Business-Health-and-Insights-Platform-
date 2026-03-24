@@ -6,12 +6,12 @@ import { Card } from '../ui/Card';
 
 export function RevenueExpenseChart({ data, loading }) {
   if (loading) {
-    return <Card className="h-[300px] animate-pulse flex items-center justify-center text-slate-500">Loading chart...</Card>;
+    return <Card className="h-[300px] animate-pulse flex items-center justify-center text-surface-muted-foreground">Loading chart...</Card>;
   }
 
   return (
     <Card className="h-[300px] flex flex-col">
-      <h3 className="text-sm font-semibold text-slate-200 mb-4">Financial Momentum</h3>
+      <h3 className="text-sm font-semibold text-surface-foreground mb-4">Financial Momentum</h3>
       <div className="flex-1 w-full h-full min-h-0">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>

@@ -6,7 +6,7 @@ export function AlertList({ alerts, loading, onDismiss }) {
     return (
       <div className="space-y-3">
         {[1, 2].map((i) => (
-          <div key={i} className="h-24 w-full animate-pulse rounded-xl bg-[#2d3449]/50" />
+          <div key={i} className="h-24 w-full animate-pulse rounded-xl bg-surface-muted/50" />
         ))}
       </div>
     );
@@ -14,7 +14,7 @@ export function AlertList({ alerts, loading, onDismiss }) {
 
   if (!alerts || alerts.length === 0) {
     return (
-      <div className="flex h-32 items-center justify-center rounded-xl border border-dashed border-[#464554] bg-[#171f33]/50 text-sm text-slate-500">
+      <div className="flex h-32 items-center justify-center rounded-xl border border-dashed border-surface-border bg-surface-card/50 text-sm text-surface-muted-foreground">
         No active alerts.
       </div>
     );

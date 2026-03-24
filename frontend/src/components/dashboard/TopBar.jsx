@@ -1,28 +1,42 @@
-/**
- * TopBar — page header with title and user info
- */
-import React from 'react';
-import { Bell, User } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 
-export function TopBar({ title, subtitle }) {
+export function TopBar() {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    setIsDark(document.documentElement.classList.contains('dark'));
+  }, []);
+
+  const toggleTheme = () => {
+    const root = document.documentElement;
+    if (root.classList.contains('dark')) {
+      root.classList.remove('dark');
+      setIsDark(false);
+    } else {
+      root.classList.add('dark');
+      setIsDark(true);
+    }
+  };
+
   return (
-    <header className="flex items-center justify-between px-6 py-4 border-b border-[#464554]/20 bg-[#0b1326]/50 backdrop-blur-sm">
-      <div>
-        <h1 className="text-lg font-bold text-[#dae2fd] leading-tight">{title}</h1>
-        {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
-      </div>
-      <div className="flex items-center gap-3">
-        <button className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-[#171f33] text-slate-400 transition hover:text-white">
-          <Bell size={16} />
-          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-[#6366f1]" />
+    <header className="bg-background/80 dark:bg-[#1a0c0a]/80 backdrop-blur-md sticky top-0 z-40 flex justify-end items-center px-8 py-6 w-full border-b border-surface-border/30">
+      <div className="flex items-center gap-4">
+        <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-surface transition-colors" title="Toggle Dark Mode">
+          {isDark ? <span className="material-symbols-outlined text-surface-muted-foreground">light_mode</span> : <span className="material-symbols-outlined text-surface-muted-foreground">dark_mode</span>}
         </button>
-        <div className="flex items-center gap-2 rounded-xl bg-[#171f33] px-3 py-1.5">
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[#6366f1] to-[#8083ff]">
-            <User size={14} className="text-white" />
+        <button className="p-2 rounded-full hover:bg-surface transition-colors">
+          <span className="material-symbols-outlined text-surface-muted-foreground">notifications</span>
+        </button>
+        <button className="p-2 rounded-full hover:bg-surface transition-colors">
+          <span className="material-symbols-outlined text-surface-muted-foreground">settings</span>
+        </button>
+        <div className="flex items-center gap-3 pl-4 border-l border-surface-border/50">
+          <div className="text-right">
+            <p className="text-sm font-bold text-surface-foreground">Dev Shah</p>
+            <p className="text-[10px] text-surface-muted-foreground uppercase font-bold">Admin</p>
           </div>
-          <div className="hidden sm:block">
-            <p className="text-xs font-semibold text-slate-200">SME Owner</p>
-            <p className="text-[10px] text-slate-500">Admin</p>
+          <div className="w-10 h-10 rounded-full bg-brand flex items-center justify-center text-white font-bold text-sm shadow-sm">
+            DS
           </div>
         </div>
       </div>

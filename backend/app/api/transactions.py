@@ -92,6 +92,39 @@ async def get_transaction(
     return tx
 
 
+@router.put("/businesses/{business_id}/transactions/{transaction_id}", response_model=TransactionRead)
+async def update_transaction(
+    business_id: uuid.UUID,
+    transaction_id: uuid.UUID,
+    payload: TransactionCreate,
+    db: AsyncSession = Depends(get_db),
+):
+    """Update a single transaction manually."""
+    result = await db.execute(
+        select(Transaction).where(
+            (Transaction.id == transaction_id) & 
+            (Transaction.business_id == business_id)
+        )
+    )
+    tx = result.scalar_one_or_none()
+    if not tx:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+        
+    category = payload.category
+    if not category and payload.description:
+        category = auto_categorize(payload.description)
+        
+    tx.type = TransactionType(payload.type.lower())
+    tx.amount = payload.amount
+    tx.category = category
+    tx.description = payload.description
+    tx.transaction_date = payload.transaction_date
+    
+    await db.commit()
+    await db.refresh(tx)
+    return tx
+
+
 @router.delete("/businesses/{business_id}/transactions/{transaction_id}", status_code=204)
 async def delete_transaction(
     business_id: uuid.UUID,

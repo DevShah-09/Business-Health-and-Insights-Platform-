@@ -16,9 +16,9 @@ export function KPICard({ label, value, delta, icon: Icon, color = '#6366f1', lo
   if (loading) {
     return (
       <div className="card animate-pulse">
-        <div className="h-4 w-24 rounded bg-[#2d3449] mb-3" />
-        <div className="h-8 w-32 rounded bg-[#2d3449] mb-2" />
-        <div className="h-3 w-16 rounded bg-[#2d3449]" />
+        <div className="h-4 w-24 rounded bg-surface-muted mb-3" />
+        <div className="h-8 w-32 rounded bg-surface-muted mb-2" />
+        <div className="h-3 w-16 rounded bg-surface-muted" />
       </div>
     );
   }
@@ -33,8 +33,8 @@ export function KPICard({ label, value, delta, icon: Icon, color = '#6366f1', lo
 
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-slate-500">{label}</p>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-[#dae2fd]" style={{ letterSpacing: '-0.04em' }}>
+          <p className="text-xs font-medium uppercase tracking-wider text-surface-muted-foreground">{label}</p>
+          <p className="mt-2 text-3xl font-bold tracking-tight text-surface-foreground" style={{ letterSpacing: '-0.04em' }}>
             {formatCurrency(value)}
           </p>
         </div>

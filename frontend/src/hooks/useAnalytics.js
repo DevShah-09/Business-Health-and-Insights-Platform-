@@ -5,6 +5,8 @@
 import { useState, useEffect } from 'react';
 import { getAnalytics, getAlerts } from '../services/analyticsService';
 
+const BUSINESS_ID = '550e8400-e29b-41d4-a716-446655440001';
+
 const MOCK_ANALYTICS = {
   kpis: {
     total_revenue: 124500,
@@ -45,9 +47,9 @@ const MOCK_ANALYTICS = {
 };
 
 const MOCK_ALERTS = [
-  { id: 1, type: 'critical', title: 'Cash Flow Risk', message: 'Cash reserves may fall below threshold in 30 days based on current burn rate.' },
-  { id: 2, type: 'warning', title: 'Marketing Overspend', message: 'Marketing expenses increased 23% this month with no measurable revenue impact.' },
-  { id: 3, type: 'info', title: 'Revenue Milestone', message: 'You are on track to hit your Q2 revenue target of $130,000.' },
+  { id: 1, severity: 'critical', title: 'Cash Flow Risk', message: 'Cash reserves may fall below threshold in 30 days based on current burn rate.' },
+  { id: 2, severity: 'warning', title: 'Marketing Overspend', message: 'Marketing expenses increased 23% this month with no measurable revenue impact.' },
+  { id: 3, severity: 'info', title: 'Revenue Milestone', message: 'You are on track to hit your Q2 revenue target of $130,000.' },
 ];
 
 export function useAnalytics() {
@@ -70,8 +72,8 @@ export function useAlerts() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getAlerts()
-      .then(setAlerts)
+    getAlerts(BUSINESS_ID)
+      .then((res) => setAlerts(res.alerts || MOCK_ALERTS))
       .catch(() => setAlerts(MOCK_ALERTS))
       .finally(() => setLoading(false));
   }, []);

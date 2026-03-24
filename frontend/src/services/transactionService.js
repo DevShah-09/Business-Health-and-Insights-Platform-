@@ -22,6 +22,16 @@ export const createTransaction = (data) => {
   return api.post(BASE_PATH, payload).then((r) => r.data);
 };
 
+/** Update an existing transaction */
+export const updateTransaction = (id, data) => {
+  const payload = {
+    ...data,
+    transaction_date: data.date || data.transaction_date || new Date().toISOString().split('T')[0],
+  };
+  delete payload.date;
+  return api.put(`${BASE_PATH}/${id}`, payload).then((r) => r.data);
+};
+
 /** Upload CSV/Excel/JSON file for bulk import */
 export const uploadTransactionFile = (file) => {
   const formData = new FormData();

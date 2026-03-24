@@ -29,11 +29,11 @@ export function HealthScore({ score = 0, profitMargin = 0, growthRate = 0, expen
   if (loading) {
     return (
       <div className="card animate-pulse flex gap-6 items-center">
-        <div className="h-32 w-32 rounded-full bg-[#2d3449] shrink-0" />
+        <div className="h-32 w-32 rounded-full bg-surface-muted shrink-0" />
         <div className="flex-1 space-y-3">
-          <div className="h-4 w-24 rounded bg-[#2d3449]" />
-          <div className="h-3 w-full rounded bg-[#2d3449]" />
-          <div className="h-3 w-full rounded bg-[#2d3449]" />
+          <div className="h-4 w-24 rounded bg-surface-muted" />
+          <div className="h-3 w-full rounded bg-surface-muted" />
+          <div className="h-3 w-full rounded bg-surface-muted" />
         </div>
       </div>
     );
@@ -58,14 +58,14 @@ export function HealthScore({ score = 0, profitMargin = 0, growthRate = 0, expen
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-3xl font-bold text-[#dae2fd]" style={{ letterSpacing: '-0.04em' }}>{score}</span>
+          <span className="text-3xl font-bold text-surface-foreground" style={{ letterSpacing: '-0.04em' }}>{score}</span>
           <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color }}>{label}</span>
         </div>
       </div>
 
       {/* KPI metrics */}
       <div className="flex-1 w-full space-y-3">
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Business Health KPIs</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-surface-muted-foreground mb-1">Business Health KPIs</p>
         <ProgressBar value={profitMargin} max={100} color="#6366f1" label="Profit Margin" />
         <ProgressBar value={growthRate} max={50} color="#22c55e" label="Growth Rate" />
         <ProgressBar value={expenseRatio} max={100} color="#f59e0b" label="Expense Ratio" />

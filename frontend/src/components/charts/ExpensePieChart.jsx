@@ -8,12 +8,12 @@ const COLORS = ['#6366f1', '#a5b4fc', '#818cf8', '#4f46e5', '#3730a3'];
 
 export function ExpensePieChart({ data, loading }) {
   if (loading) {
-    return <Card className="h-[300px] animate-pulse flex items-center justify-center text-slate-500">Loading chart...</Card>;
+    return <Card className="h-[300px] animate-pulse flex items-center justify-center text-surface-muted-foreground">Loading chart...</Card>;
   }
 
   return (
     <Card className="h-[300px] flex flex-col">
-      <h3 className="text-sm font-semibold text-slate-200 mb-4">Resource Allocation</h3>
+      <h3 className="text-sm font-semibold text-surface-foreground mb-4">Resource Allocation</h3>
       <div className="flex-1 w-full h-full min-h-0">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
