@@ -53,6 +53,15 @@ async def ai_insights(business_id: uuid.UUID, db: AsyncSession = Depends(get_db)
         "expense_breakdown": expense_breakdown,
         "income_breakdown": income_breakdown,
         "monthly_pnl": monthly_pnl,  # Pass historical trends
+        "raw_transactions": [
+            {
+                "amount": float(t.amount),
+                "category": t.category,
+                "date": t.transaction_date.isoformat(),
+                "type": t.type.value
+            } for t in transactions
+        ],
         "business_name": biz.name or "Your Business",
         "industry": biz.industry or "General",
     })
+

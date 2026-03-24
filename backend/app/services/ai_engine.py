@@ -19,12 +19,45 @@ def generate_business_insights(business_data: dict) -> dict:
     
     # Extract monthly trends and raw transactions if available
     monthly_pnl = business_data.get("monthly_pnl", [])
+    raw_txs = business_data.get("raw_transactions", [])
     
+    # Calculate monthly marketing spend from raw transactions
+    monthly_marketing = {}
+    for tx in raw_txs:
+        if tx.get("category", "").lower() == "marketing" and tx.get("type") == "expense":
+            # Extract YYYY-MM
+            month_key = tx.get("date", "")[:7]
+            monthly_marketing[month_key] = monthly_marketing.get(month_key, 0) + tx.get("amount", 0)
+    print("DEBUG monthly_pnl:", monthly_pnl)
+    print("DEBUG monthly_marketing:", monthly_marketing)
+            
     all_possible_insights = []
+    priority_insights = [] # Store must-show insights here
     recommendations = []
     health_score = 75
     risk_flags = []
     narrative_points = []
+    
+    # Zero-to-Spike Marketing Insight (MUST SHOW IF DETECTED)
+    if len(monthly_pnl) >= 2:
+        for i in range(len(monthly_pnl)-1, 0, -1):
+            prev = monthly_pnl[i-1]
+            curr = monthly_pnl[i]
+            
+            prev_mkt = monthly_marketing.get(prev.get("month", ""), 0)
+            curr_mkt = monthly_marketing.get(curr.get("month", ""), 0)
+            
+            if prev_mkt == 0 and curr_mkt > 0 and curr.get("income", 0) > prev.get("income", 0):
+                priority_insights.append({
+                    "id": "mkt-zero-to-spike",
+                    "icon": "📈",
+                    "category": "Marketing",
+                    "impact": "High",
+                    "title": "Marketing Spend Directly Increased Revenue",
+                    "description": f"In {prev.get('month')}, you spent 0 on marketing with lower revenue. In {curr.get('month')}, investing ₹{curr_mkt:,.0f} in marketing drove your revenue up to ₹{curr.get('income'):,.0f}. This directly proves the ROI of your marketing efforts.",
+                    "action": "Maintain and optimize your current marketing strategy"
+                })
+                break # Show the most recent/first detected occurrence 
 
     # 1. Overall Performance Narrative
     if total_income > 0:
@@ -64,7 +97,7 @@ def generate_business_insights(business_data: dict) -> dict:
                     "action": "Reduce spend on low-performing ads"
                 })
                 recommendations.append("Reduce marketing spend until ROI improves.")
-            elif rev_growth > 0.15:
+            elif rev_growth > 0.15 and not priority_insights: # Don't duplicate marketing success if zero-to-spike fired
                 all_possible_insights.append({
                     "id": "mkt-2",
                     "icon": "🚀",
@@ -154,7 +187,7 @@ def generate_business_insights(business_data: dict) -> dict:
         })
 
     # Selection logic: return 3-5 insights if available
-    selected_insights = all_possible_insights[:min(len(all_possible_insights), 5)]
+    selected_insights = priority_insights + all_possible_insights[:min(len(all_possible_insights), max(0, 5 - len(priority_insights)))]
 
     # Final Polish
     if not recommendations:
