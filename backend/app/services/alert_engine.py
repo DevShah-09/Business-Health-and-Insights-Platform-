@@ -86,7 +86,7 @@ def detect_expense_spike(transactions: list[Any], threshold_pct: float = 30.0) -
         pct_change = ((last_month - prev_avg) / prev_avg) * 100
         
         if pct_change > threshold_pct:
-            message = f"Expenses increased {pct_change:.1f}% last month (${last_month:,.2f}) vs average of ${prev_avg:,.2f}. Review high-cost categories."
+            message = f"Expenses increased {pct_change:.1f}% last month (₹{last_month:,.2f}) vs average of ₹{prev_avg:,.2f}. Review high-cost categories."
             alerts.append(Alert(
                 alert_id=1,
                 title="Expense Spike Detected",
@@ -134,7 +134,7 @@ def detect_revenue_drop(transactions: list[Any], threshold_pct: float = 20.0) ->
         pct_change = ((last_month - prev_avg) / prev_avg) * 100
         
         if pct_change < -threshold_pct:
-            message = f"Revenue declined {abs(pct_change):.1f}% last month (${last_month:,.2f}) vs average of ${prev_avg:,.2f}. Investigate sales channels and customer retention."
+            message = f"Revenue declined {abs(pct_change):.1f}% last month (₹{last_month:,.2f}) vs average of ₹{prev_avg:,.2f}. Investigate sales channels."
             alerts.append(Alert(
                 alert_id=2,
                 title="Revenue Drop Detected",
@@ -178,7 +178,7 @@ def detect_negative_cashflow(transactions: list[Any], days_window: int = 30) -> 
     net_flow = income - expenses
     
     if net_flow < 0:
-        message = f"Negative cash flow in last {days_window} days! Income: ${income:,.2f}, Expenses: ${expenses:,.2f}, Net: ${net_flow:,.2f}. Immediate action required."
+        message = f"Negative cash flow in last {days_window} days! Income: ₹{income:,.2f}, Expenses: ₹{expenses:,.2f}, Net: ₹{net_flow:,.2f}."
         alerts.append(Alert(
             alert_id=3,
             title="Negative Cash Flow Alert",
@@ -186,7 +186,7 @@ def detect_negative_cashflow(transactions: list[Any], days_window: int = 30) -> 
             severity=AlertSeverity.CRITICAL
         ))
     elif net_flow < expenses * 0.1:  # Less than 10% of expenses
-        message = f"Cash flow is tight (${net_flow:,.2f}). Income barely covers expenses. Preserve cash."
+        message = f"Cash flow is tight (₹{net_flow:,.2f}). Income barely covers expenses. Preserve cash."
         alerts.append(Alert(
             alert_id=4,
             title="Low Cash Margin",

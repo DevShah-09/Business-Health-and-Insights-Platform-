@@ -4,7 +4,6 @@ import { useAnalytics, useAlerts } from '../hooks/useAnalytics';
 import { KPICard } from '../components/dashboard/KPICard';
 import { HealthScore } from '../components/dashboard/HealthScore';
 import { RevenueExpenseChart } from '../components/charts/RevenueExpenseChart';
-import { CategoryBarChart } from '../components/charts/CategoryBarChart';
 import { ExpensePieChart } from '../components/charts/ExpensePieChart';
 import { AlertList } from '../components/alerts/AlertList';
 
@@ -41,21 +40,13 @@ export default function Dashboard() {
         </div>
 
         {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <RevenueExpenseChart data={data?.trend} loading={loading} />
-          </div>
-          <div>
-            <ExpensePieChart data={data?.expense_breakdown} loading={loading} />
-          </div>
+        <div className="grid grid-cols-1 gap-6">
+          <RevenueExpenseChart data={data?.trend} loading={loading} />
         </div>
 
-        {/* Lower Grid: Bar Chart + Health + Alerts */}
+        {/* Lower Grid: Health + Alerts */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1">
-            <CategoryBarChart data={data?.categories} loading={loading} />
-          </div>
-          <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
             <HealthScore
               score={data?.health_score}
               profitMargin={data?.profit_margin}

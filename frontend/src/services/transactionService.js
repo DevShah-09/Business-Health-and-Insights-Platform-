@@ -55,31 +55,6 @@ export const uploadInvoice = (file, autoInsert = false) => {
     .then((r) => r.data);
 };
 
-/** Upload and parse bank SMS transaction logs */
-export const uploadBankSMS = (file) => {
-  const formData = new FormData();
-  formData.append('file', file);
-  return api
-    .post(`${BASE_PATH}/upload/sms`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
-    .then((r) => r.data);
-};
-
-/** Upload and parse UPI/WhatsApp transaction logs */
-export const uploadUPILogs = (file) => {
-  const formData = new FormData();
-  formData.append('file', file);
-  return api
-    .post(`${BASE_PATH}/upload/upi`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
-    .then((r) => r.data);
-};
-
-/** Auto-categorize uncategorized transactions */
-export const autoCategorizeTransactions = () =>
-  api.post(`${BASE_PATH}/categorize`).then((r) => r.data);
 
 /** Delete a transaction by ID */
 export const deleteTransaction = (id) =>

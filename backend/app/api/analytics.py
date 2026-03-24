@@ -58,22 +58,21 @@ async def get_analytics(business_id: uuid.UUID, db: AsyncSession = Depends(get_d
     profitability = compute_profitability_metrics(transactions)
 
     # Format trend for the frontend (Jan, Feb, etc.)
+    # Only include data from the current year to ensure chronological order for the user
+    current_year = datetime.now().year
     trend = []
     for item in monthly_pnl:
         try:
             # item["month"] is "YYYY-MM"
             dt = datetime.strptime(item["month"], "%Y-%m")
-            trend.append({
-                "month": dt.strftime("%b"),
-                "revenue": item["income"],
-                "expenses": item["expenses"]
-            })
+            if dt.year == current_year:
+                trend.append({
+                    "month": dt.strftime("%b"),
+                    "revenue": item["income"],
+                    "expenses": item["expenses"]
+                })
         except:
-            trend.append({
-                "month": item["month"],
-                "revenue": item["income"],
-                "expenses": item["expenses"]
-            })
+            pass
 
     # Format categories for frontend
     categories = []
@@ -103,23 +102,38 @@ async def get_analytics(business_id: uuid.UUID, db: AsyncSession = Depends(get_d
             "value": data["amount"]
         })
 
+    # Calculate MoM deltas
+    revenue_delta = 0
+    expense_delta = 0
+    profit_delta = 0
+    
+    if len(monthly_pnl) >= 2:
+        curr = monthly_pnl[-1]
+        prev = monthly_pnl[-2]
+        if prev["income"] > 0:
+            revenue_delta = ((curr["income"] - prev["income"]) / prev["income"]) * 100
+        if prev["expenses"] > 0:
+            expense_delta = ((curr["expenses"] - prev["expenses"]) / prev["expenses"]) * 100
+        if abs(prev["profit_loss"]) > 0:
+            profit_delta = ((curr["profit_loss"] - prev["profit_loss"]) / abs(prev["profit_loss"])) * 100
+
     return {
         "kpis": {
             "total_revenue": summary.total_income,
             "total_expenses": summary.total_expenses,
             "net_profit": summary.net_profit,
-            "cash_balance": summary.net_profit, # Using net profit as proxy for balance if starting from 0
-            "revenue_delta": 0, # delta calc would require date range filtering
-            "expense_delta": 0,
-            "profit_delta": 0,
-            "cash_delta": 0,
+            "cash_balance": summary.net_profit, 
+            "revenue_delta": round(revenue_delta, 1),
+            "expense_delta": round(expense_delta, 1),
+            "profit_delta": round(profit_delta, 1),
+            "cash_delta": round(profit_delta, 1), # Using profit delta as proxy for cash delta
         },
         "trend": trend,
         "categories": categories,
         "expense_breakdown": expense_breakdown,
         "health_score": 85, # Logic for health score could be more complex
         "profit_margin": summary.profit_margin,
-        "growth_rate": 0,
+        "growth_rate": round(revenue_delta, 1),
         "expense_ratio": profitability["expense_ratio"],
     }
 

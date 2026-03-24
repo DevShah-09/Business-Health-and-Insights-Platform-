@@ -49,7 +49,7 @@ const MOCK_ANALYTICS = {
 const MOCK_ALERTS = [
   { id: 1, severity: 'critical', title: 'Cash Flow Risk', message: 'Cash reserves may fall below threshold in 30 days based on current burn rate.' },
   { id: 2, severity: 'warning', title: 'Marketing Overspend', message: 'Marketing expenses increased 23% this month with no measurable revenue impact.' },
-  { id: 3, severity: 'info', title: 'Revenue Milestone', message: 'You are on track to hit your Q2 revenue target of $130,000.' },
+  { id: 3, severity: 'info', title: 'Revenue Milestone', message: 'You are on track to hit your Q2 revenue target of ₹1,30,000.' },
 ];
 
 export function useAnalytics() {

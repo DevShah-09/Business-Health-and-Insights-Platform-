@@ -19,7 +19,7 @@ export function TopBar() {
   };
 
   return (
-    <header className="bg-background/80 dark:bg-[#1a0c0a]/80 backdrop-blur-md sticky top-0 z-40 flex justify-end items-center px-8 py-6 w-full border-b border-surface-border/30">
+    <header className="bg-surface/80 backdrop-blur-xl sticky top-0 z-40 flex justify-end items-center px-8 py-4 w-full border-b border-surface-border/40 shadow-[0_4px_30px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_30px_rgba(0,0,0,0.2)]">
       <div className="flex items-center gap-4">
         <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-surface transition-colors" title="Toggle Dark Mode">
           {isDark ? <span className="material-symbols-outlined text-surface-muted-foreground">light_mode</span> : <span className="material-symbols-outlined text-surface-muted-foreground">dark_mode</span>}

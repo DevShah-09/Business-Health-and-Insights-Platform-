@@ -24,7 +24,7 @@ export function ProgressBar({ value = 0, max = 100, color = '#6366f1', label, sh
       {(label || showValue) && (
         <div className="flex justify-between text-xs">
           {label && <span className="text-surface-muted-foreground">{label}</span>}
-          {showValue && <span className="font-semibold text-surface-foreground">{pct}%</span>}
+          {showValue && <span className="font-semibold text-surface-foreground">{Number(value).toFixed(1)}%</span>}
         </div>
       )}
       <div className="h-2 w-full overflow-hidden rounded-full bg-surface-muted">

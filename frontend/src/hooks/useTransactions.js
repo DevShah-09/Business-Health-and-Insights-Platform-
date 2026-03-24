@@ -2,7 +2,15 @@
  * useTransactions — fetches and manages transaction list
  */
 import { useState, useEffect, useCallback } from 'react';
-import { getTransactions, createTransaction, updateTransaction, deleteTransaction, uploadTransactionFile, uploadInvoice, uploadBankSMS, uploadUPILogs, autoCategorizeTransactions } from '../services/transactionService';
+// Removed uploadBankSMS and uploadUPILogs from imports
+import { 
+  getTransactions, 
+  createTransaction, 
+  updateTransaction, 
+  deleteTransaction, 
+  uploadTransactionFile, 
+  uploadInvoice 
+} from '../services/transactionService';
 
 const MOCK_TRANSACTIONS = [
   { id: 1, date: '2026-06-28', type: 'income', category: 'Services', description: 'Consulting Project - Alpha Corp', amount: 18500 },
@@ -24,7 +32,6 @@ export function useTransactions() {
     setLoading(true);
     getTransactions()
       .then((data) => {
-        // Backend returns array directly, not {transactions: [...]}
         const txList = Array.isArray(data) ? data : data?.transactions || [];
         setTransactions(txList);
       })
@@ -41,12 +48,10 @@ export function useTransactions() {
     setSubmitting(true);
     try {
       await createTransaction(data);
-      // Refresh to ensure we have the latest transactions from backend
       fetchTransactions();
       window.dispatchEvent(new CustomEvent('financial-data-refresh'));
     } catch (err) {
       console.error('Failed to create transaction:', err);
-      // Optionally show optimistic update or error toast
     } finally {
       setSubmitting(false);
     }
@@ -72,11 +77,9 @@ export function useTransactions() {
         await uploadTransactionFile(file).catch(() => {});
       } else if (uploadType === 'invoice') {
         await uploadInvoice(file, true).catch(() => {});
-      } else if (uploadType === 'sms') {
-        await uploadBankSMS(file).catch(() => {});
-      } else if (uploadType === 'upi') {
-        await uploadUPILogs(file).catch(() => {});
-      }
+      } 
+      // Removed the 'sms' and 'upi' conditional blocks
+      
       fetchTransactions();
       window.dispatchEvent(new CustomEvent('financial-data-refresh'));
     } finally {
@@ -84,16 +87,6 @@ export function useTransactions() {
     }
   };
 
-  const categorizeAll = async () => {
-    setSubmitting(true);
-    try {
-      await autoCategorizeTransactions().catch(() => {});
-      fetchTransactions();
-      window.dispatchEvent(new CustomEvent('financial-data-refresh'));
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   const removeTransaction = async (id) => {
     await deleteTransaction(id).catch(() => {});
@@ -101,5 +94,13 @@ export function useTransactions() {
     window.dispatchEvent(new CustomEvent('financial-data-refresh'));
   };
 
-  return { transactions, loading, submitting, addTransaction, editTransaction, uploadFile, categorizeAll, removeTransaction };
+  return { 
+    transactions, 
+    loading, 
+    submitting, 
+    addTransaction, 
+    editTransaction, 
+    uploadFile, 
+    removeTransaction 
+  };
 }

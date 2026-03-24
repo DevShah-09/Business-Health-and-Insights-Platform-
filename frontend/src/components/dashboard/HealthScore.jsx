@@ -67,7 +67,7 @@ export function HealthScore({ score = 0, profitMargin = 0, growthRate = 0, expen
       <div className="flex-1 w-full space-y-3">
         <p className="text-xs font-semibold uppercase tracking-wider text-surface-muted-foreground mb-1">Business Health KPIs</p>
         <ProgressBar value={profitMargin} max={100} color="#6366f1" label="Profit Margin" />
-        <ProgressBar value={growthRate} max={50} color="#22c55e" label="Growth Rate" />
+        <ProgressBar value={growthRate} max={100} color="#22c55e" label="Growth Rate" />
         <ProgressBar value={expenseRatio} max={100} color="#f59e0b" label="Expense Ratio" />
       </div>
     </div>

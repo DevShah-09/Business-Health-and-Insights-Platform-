@@ -13,8 +13,6 @@ from app.schemas.schemas import (
 from app.services.ingestion import (
     parse_upload_file, df_to_transaction_dicts, auto_categorize,
     extract_text_from_pdf, extract_invoice_data,
-    parse_sms_logs, parse_upi_logs, 
-    parsed_transactions_to_dicts
 )
 
 router = APIRouter()
@@ -218,111 +216,6 @@ async def upload_invoice(
     return InvoiceExtractionResponse(**invoice_data, extracted_text=pdf_text[:500])
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SMS/Bank Statement Log Upload
-# ─────────────────────────────────────────────────────────────────────────────
-
-@router.post("/businesses/{business_id}/transactions/upload/sms", 
-             response_model=BulkIngestionResponse, status_code=201)
-async def upload_sms_logs(
-    business_id: uuid.UUID,
-    file: UploadFile = File(..., description="Text file with SMS transaction logs"),
-    db: AsyncSession = Depends(get_db),
-):
-    """
-    Parse bank SMS/transaction alerts from text file.
-    
-    Expected format (one transaction per line):
-    [DATE] [BANK] Debited/Credited Rs. [AMOUNT] [DETAILS]
-    
-    Example:
-    2024-03-15 HDFC Bank: Debited Rs. 5000 from Ac **1234 for UPI transaction
-    2024-03-14 Axis Bank: Credited Rs. 50000 to Ac **5678 Salary Credit
-    """
-    content = await file.read()
-    transactions = await parse_sms_logs(content)
-    rows = parsed_transactions_to_dicts(transactions, business_id, source="sms")
-    
-    await db.execute(insert(Transaction), rows)
-    await db.commit()
-    
-    return BulkIngestionResponse(
-        total_processed=len(transactions),
-        successful=len(rows),
-        failed=len(transactions) - len(rows),
-    )
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# UPI/WhatsApp Logs Upload
-# ─────────────────────────────────────────────────────────────────────────────
-
-@router.post("/businesses/{business_id}/transactions/upload/upi", 
-             response_model=BulkIngestionResponse, status_code=201)
-async def upload_upi_logs(
-    business_id: uuid.UUID,
-    file: UploadFile = File(..., description="Text file with UPI/WhatsApp transaction logs"),
-    db: AsyncSession = Depends(get_db),
-):
-    """
-    Parse UPI/WhatsApp transaction logs from text file.
-    
-    Expected format (one transaction per line):
-    [HH:MM] Paid Rs. 500 to John via UPI
-    [HH:MM] Received Rs. 1000 from Jane
-    
-    Automatically categorizes transactions based on description.
-    """
-    content = await file.read()
-    transactions = await parse_upi_logs(content)
-    rows = parsed_transactions_to_dicts(transactions, business_id, source="upi")
-    
-    await db.execute(insert(Transaction), rows)
-    await db.commit()
-    
-    return BulkIngestionResponse(
-        total_processed=len(transactions),
-        successful=len(rows),
-        failed=len(transactions) - len(rows),
-    )
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Auto-Categorization
-# ─────────────────────────────────────────────────────────────────────────────
-
-@router.post("/businesses/{business_id}/transactions/categorize", status_code=200)
-async def auto_categorize_transactions(
-    business_id: uuid.UUID,
-    db: AsyncSession = Depends(get_db),
-):
-    """
-    Auto-categorize all transactions with empty or 'other' categories.
-    Uses description and smart keyword matching.
-    """
-    result = await db.execute(
-        select(Transaction).where(
-            (Transaction.business_id == business_id) &
-            ((Transaction.category == "other") | (Transaction.category.is_(None)))
-        )
-    )
-    transactions = result.scalars().all()
-    
-    updated_count = 0
-    for tx in transactions:
-        if tx.description:
-            new_category = auto_categorize(tx.description)
-            if new_category != tx.category:
-                tx.category = new_category
-                updated_count += 1
-    
-    await db.commit()
-    
-    return {
-        "total_transactions": len(transactions),
-        "updated": updated_count,
-        "message": f"Categorized {updated_count} transactions"
-    }
 
 
 @router.get("/transactions/categories", status_code=200)
