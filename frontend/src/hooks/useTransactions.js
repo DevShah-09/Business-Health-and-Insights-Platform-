@@ -2,7 +2,7 @@
  * useTransactions — fetches and manages transaction list
  */
 import { useState, useEffect, useCallback } from 'react';
-import { getTransactions, createTransaction, deleteTransaction, uploadTransactionFile, uploadInvoice, uploadBankSMS, uploadUPILogs, autoCategorizeTransactions } from '../services/transactionService';
+import { getTransactions, createTransaction, deleteTransaction, uploadTransactionFile } from '../services/transactionService';
 
 const MOCK_TRANSACTIONS = [
   { id: 1, date: '2026-06-28', type: 'income', category: 'Services', description: 'Consulting Project - Alpha Corp', amount: 18500 },
@@ -23,8 +23,15 @@ export function useTransactions() {
   const fetchTransactions = useCallback(() => {
     setLoading(true);
     getTransactions()
-      .then((d) => setTransactions(d?.transactions || d))
-      .catch(() => setTransactions(MOCK_TRANSACTIONS))
+      .then((data) => {
+        // Backend returns array directly, not {transactions: [...]}
+        const txList = Array.isArray(data) ? data : data?.transactions || [];
+        setTransactions(txList);
+      })
+      .catch((err) => {
+        console.error('Failed to fetch transactions:', err);
+        setTransactions(MOCK_TRANSACTIONS);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -33,35 +40,21 @@ export function useTransactions() {
   const addTransaction = async (data) => {
     setSubmitting(true);
     try {
-      const newTx = await createTransaction(data).catch(() => ({ id: Date.now(), ...data }));
-      setTransactions((prev) => [newTx, ...prev]);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const uploadFile = async (file, uploadType = 'csv') => {
-    setSubmitting(true);
-    try {
-      if (uploadType === 'csv') {
-        await uploadTransactionFile(file).catch(() => {});
-      } else if (uploadType === 'invoice') {
-        await uploadInvoice(file, true).catch(() => {});
-      } else if (uploadType === 'sms') {
-        await uploadBankSMS(file).catch(() => {});
-      } else if (uploadType === 'upi') {
-        await uploadUPILogs(file).catch(() => {});
-      }
+      const newTx = await createTransaction(data);
+      // Refresh to ensure we have the latest transactions from backend
       fetchTransactions();
+    } catch (err) {
+      console.error('Failed to create transaction:', err);
+      // Optionally show optimistic update or error toast
     } finally {
       setSubmitting(false);
     }
   };
 
-  const categorizeAll = async () => {
+  const uploadFile = async (file) => {
     setSubmitting(true);
     try {
-      await autoCategorizeTransactions().catch(() => {});
+      await uploadTransactionFile(file).catch(() => {});
       fetchTransactions();
     } finally {
       setSubmitting(false);
@@ -73,5 +66,5 @@ export function useTransactions() {
     setTransactions((prev) => prev.filter((t) => t.id !== id));
   };
 
-  return { transactions, loading, submitting, addTransaction, uploadFile, categorizeAll, removeTransaction };
+  return { transactions, loading, submitting, addTransaction, uploadFile, removeTransaction };
 }
