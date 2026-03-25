@@ -18,8 +18,8 @@ export function Sidebar() {
           <span className="material-symbols-outlined text-white" style={{ fontVariationSettings: "'FILL' 1" }}>account_balance_wallet</span>
         </div>
         <div>
-          <h1 className="font-headline text-xl font-bold text-surface-foreground">FinSight</h1>
-          <p className="text-[10px] uppercase tracking-widest text-surface-muted-foreground font-bold">Ledger Artisan</p>
+          <h1 className="font-headline text-xl font-bold text-surface-foreground">Vyapar IQ</h1>
+          <p className="text-[10px] uppercase tracking-widest text-surface-muted-foreground font-bold">Business Intelligence Platform</p>
         </div>
       </div>
       <nav className="flex-1 space-y-1">

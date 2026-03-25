@@ -9,7 +9,7 @@ transaction_date,type,amount,category,description
 2024-03-20,expense,1200,,Uber ride to office
 2024-03-20,income,50000,,Client payment for project
 2024-03-19,expense,800,utilities,Internet bill payment
-2024-03-19,expense,15000,professional_services,Accounting consultation
+2024-03-19,expense,15000,Services,Accounting consultation
 2024-03-18,expense,2500,,Office supplies purchase
 2024-03-18,income,10000,,Freelance project payment
 2024-03-17,expense,500,food,Coffee and snacks for team
@@ -25,7 +25,7 @@ Date,Type,Amount,Category,Notes
 2024-03-19,expense,2000,healthcare,Doctor consultation
 2024-03-19,expense,500,entertainment,Netflix subscription
 2024-03-18,expense,1000,utilities,Electricity bill
-2024-03-18,expense,3500,professional_services,Legal consultation
+2024-03-18,expense,3500,Services,Legal consultation
 ```
 
 ---

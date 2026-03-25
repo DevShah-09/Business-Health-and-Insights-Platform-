@@ -38,7 +38,7 @@ Provides a quick overview of key financial metrics.
   "avg_monthly_income": 50000.00,
   "avg_monthly_expenses": 31666.67,
   "top_expense_categories": {
-    "professional_services": 25000.00,
+    "Services": 25000.00,
     "utilities": 15000.00,
     "food": 12500.00,
     "transportation": 8000.00,
@@ -91,7 +91,6 @@ Get a complete financial analysis with all metrics in one request.
     "total_inflow": 150000.00,
     "total_outflow": 95000.00,
     "net_cash_flow": 55000.00,
-    "avg_daily_flow": 916.67,
     "working_capital": 55000.00
   },
   "burn_rate": {
@@ -283,7 +282,6 @@ Get overall cash flow metrics.
   "total_inflow": 150000.00,
   "total_outflow": 95000.00,
   "net_cash_flow": 55000.00,
-  "avg_daily_flow": 916.67,
   "working_capital": 55000.00
 }
 ```
@@ -292,7 +290,6 @@ Get overall cash flow metrics.
 - **Total Inflow**: Total income (all income transactions)
 - **Total Outflow**: Total expenses (all expense transactions)
 - **Net Cash Flow**: Inflow - Outflow (net cash position)
-- **Avg Daily Flow**: Average daily cash movement
 - **Working Capital**: Available cash for operations
 
 **cURL:**
@@ -324,7 +321,7 @@ Get cumulative cash flow over time (running balance).
     "outflow": 3000.00,
     "cumulative_balance": -500.00,
     "transaction_type": "expense",
-    "category": "professional_services"
+    "category": "Services"
   },
   {
     "date": "2024-03-17",
@@ -423,7 +420,7 @@ Get category-wise expense analysis.
 ```json
 {
   "categories": {
-    "professional_services": {
+    "Services": {
       "amount": 25000.00,
       "percentage": 26.32,
       "transaction_count": 5,
@@ -559,10 +556,10 @@ Find unusual transactions (statistical outliers).
     "transaction_id": "550e8400-e29b-41d4-a716-446655440000",
     "transaction_date": "2024-03-15",
     "amount": 50000.00,
-    "category": "professional_services",
+    "category": "Services",
     "type": "expense",
     "z_score": 3.5,
-    "reason": "Significantly higher than average professional_services expense"
+    "reason": "Significantly higher than average Services expense"
   }
 ]
 ```

@@ -136,6 +136,35 @@ def get_weekly_pnl(transactions: list[Any]) -> list[dict]:
     return sorted(result, key=lambda x: x["week"])
 
 
+def get_yearly_pnl(transactions: list[Any]) -> list[dict]:
+    """Get yearly Profit & Loss."""
+    if not transactions:
+        return []
+    
+    df = _to_df(transactions)
+    df["year"] = df["transaction_date"].dt.year.astype(str)
+    
+    yearly = df.groupby(["year", "type"])["amount"].sum().unstack(fill_value=0).reset_index()
+    yearly.columns.name = None
+    
+    result = []
+    for _, row in yearly.iterrows():
+        income = float(row.get("income", 0))
+        expense = float(row.get("expense", 0))
+        pnl = income - expense
+        margin = (pnl / income * 100) if income > 0 else (0 if pnl == 0 else -100)
+        
+        result.append({
+            "year": row["year"],
+            "income": round(income, 2),
+            "expenses": round(expense, 2),
+            "profit_loss": round(pnl, 2),
+            "profit_margin": round(margin, 2),
+        })
+    
+    return sorted(result, key=lambda x: x["year"])
+
+
 def get_monthly_pnl(transactions: list[Any]) -> list[dict]:
     """Get monthly Profit & Loss."""
     if not transactions:
@@ -165,6 +194,50 @@ def get_monthly_pnl(transactions: list[Any]) -> list[dict]:
     return sorted(result, key=lambda x: x["month"])
 
 
+def fill_month_gaps(monthly_data: list[dict]) -> list[dict]:
+    """
+    Ensure the monthly Profit & Loss series has no calendar gaps.
+    Pads missing months with zero-value entries.
+    """
+    if not monthly_data:
+        return []
+    
+    # Sort data by month string
+    sorted_data = sorted(monthly_data, key=lambda x: x["month"])
+    
+    start_dt = datetime.strptime(sorted_data[0]["month"], "%Y-%m")
+    # Take the later of the last data point or the current month
+    end_dt = datetime.strptime(sorted_data[-1]["month"], "%Y-%m")
+    now = datetime.now()
+    if now.year > end_dt.year or (now.year == end_dt.year and now.month > end_dt.month):
+        end_dt = datetime(now.year, now.month, 1)
+
+    data_map = {item["month"]: item for item in sorted_data}
+    result = []
+    
+    curr = start_dt
+    while curr <= end_dt:
+        m_str = curr.strftime("%Y-%m")
+        if m_str in data_map:
+            result.append(data_map[m_str])
+        else:
+            result.append({
+                "month": m_str,
+                "income": 0.0,
+                "expenses": 0.0,
+                "profit_loss": 0.0,
+                "profit_margin": 0.0
+            })
+        
+        # Advance to next month
+        if curr.month == 12:
+            curr = datetime(curr.year + 1, 1, 1)
+        else:
+            curr = datetime(curr.year, curr.month + 1, 1)
+            
+    return result
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Cash Flow Tracking & Analysis
 # ─────────────────────────────────────────────────────────────────────────────
@@ -179,7 +252,6 @@ def compute_cash_flow(transactions: list[Any]) -> dict:
             "total_inflow": 0,
             "total_outflow": 0,
             "net_cash_flow": 0,
-            "avg_daily_flow": 0,
             "working_capital": 0,
         }
     
@@ -188,15 +260,10 @@ def compute_cash_flow(transactions: list[Any]) -> dict:
     exp = df[df["type"] == "expense"]["amount"].sum()
     net_flow = float(inc - exp)
     
-    # Days elapsed
-    date_range = (df["transaction_date"].max() - df["transaction_date"].min()).days + 1
-    avg_daily = net_flow / date_range if date_range > 0 else 0
-    
     return {
         "total_inflow": round(float(inc), 2),
         "total_outflow": round(float(exp), 2),
         "net_cash_flow": round(net_flow, 2),
-        "avg_daily_flow": round(avg_daily, 2),
         "working_capital": round(net_flow, 2),  # Net cash available
     }
 
@@ -245,7 +312,17 @@ def detect_negative_cash_flow(transactions: list[Any], period: str = "monthly") 
     else:  # monthly
         pnl_data = get_monthly_pnl(transactions)
     
-    negative_periods = [p for p in pnl_data if p["profit_loss"] < 0]
+    # Map the dynamic period key ('date', 'week', 'month') to the generic 'period' field required by schema
+    period_key_map = {"daily": "date", "weekly": "week", "monthly": "month"}
+    actual_key = period_key_map.get(period, "month")
+    
+    negative_periods = []
+    for p in pnl_data:
+        if p["profit_loss"] < 0:
+            # Create a copy and add the generic 'period' field for Pydantic validation
+            newItem = p.copy()
+            newItem["period"] = str(p.get(actual_key, ""))
+            negative_periods.append(newItem)
     
     return negative_periods
 
@@ -284,21 +361,38 @@ def get_burn_rate(transactions: list[Any], days: int = 30) -> dict:
 
 def get_expense_breakdown(transactions: list[Any]) -> dict:
     """
-    Get detailed category-wise expense breakdown.
-    Returns amount, percentage, and count for each category.
+    Get detailed category-wise expense breakdown with MoM trends.
     """
     if not transactions:
         return {}
     
     df = _to_df(transactions)
-    exp = df[df["type"] == "expense"]
+    # Ensure datetime for period calculations
+    if 'transaction_date' in df.columns and not pd.api.types.is_datetime64_any_dtype(df['transaction_date']):
+        df['transaction_date'] = pd.to_datetime(df['transaction_date'])
+
+    exp = df[df["type"] == "expense"].copy()
     
     if exp.empty:
         return {}
     
-    total_expenses = exp["amount"].sum()
+    total_expenses = float(exp["amount"].sum())
     category_breakdown = {}
     
+    # Use a copy to avoid SettingWithCopyWarning
+    exp = exp.copy()
+    exp['month_period'] = exp['transaction_date'].dt.to_period('M')
+    all_months = sorted(exp['month_period'].unique())
+    
+    latest_month = all_months[-1] if all_months else None
+    prev_month = all_months[-2] if len(all_months) > 1 else None
+    
+    curr_month_exp = exp[exp['month_period'] == latest_month]
+    prev_month_exp = exp[exp['month_period'] == prev_month] if prev_month is not None else pd.DataFrame()
+    
+    curr_cat_totals = curr_month_exp.groupby('category')['amount'].sum()
+    prev_cat_totals = prev_month_exp.groupby('category')['amount'].sum() if not prev_month_exp.empty else pd.Series(dtype=float)
+
     for category in exp["category"].unique():
         cat_data = exp[exp["category"] == category]
         amount = float(cat_data["amount"].sum())
@@ -306,11 +400,27 @@ def get_expense_breakdown(transactions: list[Any]) -> dict:
         count = len(cat_data)
         avg_transaction = amount / count if count > 0 else 0
         
+        # MoM Trend calculation
+        curr_amt = float(curr_cat_totals.get(category, 0))
+        prev_amt = float(prev_cat_totals.get(category, 0))
+        
+        import math
+        trend = 0.0
+        if prev_amt > 0:
+            trend = ((curr_amt - prev_amt) / prev_amt) * 100
+        elif curr_amt > 0 and prev_month in all_months:
+            trend = 100.0
+        
+        # Ensure it's never a non-finite number
+        if not math.isfinite(trend):
+            trend = 0.0
+        
         category_breakdown[category] = {
             "amount": round(amount, 2),
             "percentage": round(percentage, 2),
             "transaction_count": count,
             "average_transaction": round(avg_transaction, 2),
+            "trend": round(trend, 1)
         }
     
     # Sort by amount descending
@@ -345,6 +455,7 @@ def get_income_breakdown(transactions: list[Any]) -> dict:
             "percentage": round(percentage, 2),
             "transaction_count": count,
             "average_transaction": round(avg_transaction, 2),
+            "trend": 0.0  # Income trend not implemented yet
         }
     
     return dict(sorted(category_breakdown.items(), key=lambda x: x[1]["amount"], reverse=True))

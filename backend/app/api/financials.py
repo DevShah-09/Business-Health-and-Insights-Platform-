@@ -3,7 +3,7 @@ app/api/financials.py — Comprehensive Financial Analysis & KPI Routes
 Includes P&L analysis, cash flow tracking, profitability metrics, and expense breakdown.
 """
 import uuid
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -239,3 +239,58 @@ async def anomalies(business_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
     """
     result = await db.execute(select(Transaction).where(Transaction.business_id == business_id))
     return detect_anomalies(result.scalars().all())
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 7. EXPORT ENDPOINTS
+# ─────────────────────────────────────────────────────────────────────────────
+
+@router.get("/businesses/{business_id}/financials/export")
+async def export_financial_report(
+    business_id: uuid.UUID,
+    period: str = Query("monthly", description="Period: 'weekly', 'monthly', or 'yearly'"),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Export financial data as CSV.
+    Supported periods: 'weekly', 'monthly', 'yearly'.
+    """
+    from fastapi.responses import StreamingResponse
+    import io
+    import csv
+
+    # Fetch transactions
+    result = await db.execute(select(Transaction).where(Transaction.business_id == business_id))
+    transactions = result.scalars().all()
+
+    if not transactions:
+        raise HTTPException(status_code=404, detail="No transactions found for this business.")
+
+    # Get data based on period
+    if period == "weekly":
+        data = get_weekly_pnl(transactions)
+        filename = f"weekly_report_{business_id}.csv"
+        headers = ["week", "income", "expenses", "profit_loss", "profit_margin"]
+    elif period == "yearly":
+        data = get_yearly_pnl(transactions)
+        filename = f"yearly_report_{business_id}.csv"
+        headers = ["year", "income", "expenses", "profit_loss", "profit_margin"]
+    else:  # Default to monthly
+        data = get_monthly_pnl(transactions)
+        filename = f"monthly_report_{business_id}.csv"
+        headers = ["month", "income", "expenses", "profit_loss", "profit_margin"]
+
+    # Generate CSV in memory
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=headers)
+    writer.writeheader()
+    writer.writerows(data)
+    
+    # Reset cursor and return stream
+    output.seek(0)
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )

@@ -207,7 +207,7 @@ async def upload_invoice(
             business_id=business_id,
             type=TransactionType.EXPENSE,  # Invoices are typically expenses
             amount=invoice_data["amount"],
-            category=auto_categorize(invoice_data.get("vendor", ""), "professional_services"),
+            category=auto_categorize(invoice_data.get("vendor", ""), "Services"),
             description=f"Invoice: {invoice_data.get('invoice_number', 'N/A')} from {invoice_data.get('vendor', 'Unknown')}",
             transaction_date=invoice_data.get("invoice_date") or __import__('datetime').date.today(),
             source="pdf_invoice"

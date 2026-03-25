@@ -39,7 +39,6 @@ const MOCK_FINANCIAL_REPORT = {
     total_inflow: 647500,
     total_outflow: 475200,
     net_cash_flow: 172300,
-    average_daily_flow: 944.51,
   },
   monthly_pnl: MOCK_MONTHLY_PNL,
   burn_rate: {
@@ -53,7 +52,6 @@ const MOCK_CASH_FLOW = {
   total_inflow: 647500,
   total_outflow: 475200,
   net_cash_flow: 172300,
-  average_daily_flow: 944.51,
 };
 
 const MOCK_CASH_FLOW_TREND = [
@@ -130,6 +128,7 @@ export const getExpenseBreakdown = () =>
           category,
           amount: data?.amount || 0,
           percentage: data?.percentage || 0,
+          trend: data?.trend || 0,
         }));
       }
       return [];
@@ -145,6 +144,7 @@ export const getIncomeBreakdown = () =>
           category,
           amount: data?.amount || 0,
           percentage: data?.percentage || 0,
+          trend: data?.trend || 0,
         }));
       }
       return [];

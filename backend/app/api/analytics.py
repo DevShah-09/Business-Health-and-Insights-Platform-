@@ -12,7 +12,8 @@ from app.services.financial_engine import (
     compute_financial_summary, 
     get_monthly_pnl, 
     get_expense_breakdown,
-    compute_profitability_metrics
+    compute_profitability_metrics,
+    fill_month_gaps
 )
 from app.services.alert_engine import detect_all_alerts
 
@@ -99,10 +100,15 @@ async def get_analytics(business_id: uuid.UUID, db: AsyncSession = Depends(get_d
     for cat, data in expense_breakdown_raw.items():
         expense_breakdown.append({
             "name": cat,
-            "value": data["amount"]
+            "value": data["amount"],
+            "percentage": data.get("percentage", 0),
+            "trend": data.get("trend", 0)
         })
 
-    # Calculate MoM deltas
+    # Ensure monthly PnL has no gaps for accurate MoM comparison
+    monthly_pnl = fill_month_gaps(monthly_pnl)
+
+    # Calculate MoM deltas using guaranteed consecutive months
     revenue_delta = 0
     expense_delta = 0
     profit_delta = 0
@@ -110,12 +116,25 @@ async def get_analytics(business_id: uuid.UUID, db: AsyncSession = Depends(get_d
     if len(monthly_pnl) >= 2:
         curr = monthly_pnl[-1]
         prev = monthly_pnl[-2]
+        
+        # Revenue Growth
         if prev["income"] > 0:
             revenue_delta = ((curr["income"] - prev["income"]) / prev["income"]) * 100
+        elif curr["income"] > 0:
+            # Jump from zero to positive revenue is a 100% growth milestone
+            revenue_delta = 100.0
+            
+        # Expense Delta
         if prev["expenses"] > 0:
             expense_delta = ((curr["expenses"] - prev["expenses"]) / prev["expenses"]) * 100
+        elif curr["expenses"] > 0:
+            expense_delta = 100.0
+            
+        # Profit Delta
         if abs(prev["profit_loss"]) > 0:
             profit_delta = ((curr["profit_loss"] - prev["profit_loss"]) / abs(prev["profit_loss"])) * 100
+        elif curr["profit_loss"] > 0:
+            profit_delta = 100.0
 
     return {
         "kpis": {

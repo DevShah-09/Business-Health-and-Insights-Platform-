@@ -49,7 +49,7 @@ CATEGORY_KEYWORDS = {
     "utilities": ["electricity", "water", "gas", "internet", "wifi", "phone bill", "utilities"],
     "entertainment": ["movie", "cinema", "netflix", "spotify", "gaming", "concert", "ticket"],
     "healthcare": ["doctor", "hospital", "clinic", "pharmacy", "medical", "health"],
-    "professional_services": ["consulting", "accounting", "legal", "lawyer", "audit"],
+    "Services": ["consulting", "accounting", "legal", "lawyer", "audit"],
     "marketing": ["advertising", "ads", "social media", "marketing", "campaign"],
     "salary": ["salary", "wage", "paycheck", "salary payment"],
     "investment": ["dividend", "interest", "investment", "roi"],

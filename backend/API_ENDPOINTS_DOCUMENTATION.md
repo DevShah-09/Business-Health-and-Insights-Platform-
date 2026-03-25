@@ -172,7 +172,7 @@ with open("transactions.csv", "rb") as f:
 - Extracts invoice amount
 - Extracts invoice date
 - Extracts invoice number
-- Auto-categorizes to "professional_services"
+- Auto-categorizes to "Services"
 - Optionally creates transaction record
 
 **cURL Example:**
@@ -338,7 +338,7 @@ curl -X POST "http://localhost:8000/api/v1/businesses/550e8400-e29b-41d4-a716-44
       "keywords": "advertising, ads, social media, marketing, campaign"
     },
     {
-      "name": "professional_services",
+      "name": "Services",
       "keywords": "consulting, accounting, legal, lawyer, audit"
     },
     {

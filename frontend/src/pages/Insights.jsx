@@ -9,7 +9,7 @@ import { ChatWindow } from '../components/chat/ChatWindow';
 export default function Insights() {
   const { insights, loading, refetch } = useInsights();
 
-  /** Convert snake_case to Title Case (e.g. professional_services → Professional Services) */
+  /** Convert snake_case to Title Case (e.g. Services → Professional Services) */
   const formatText = (text) =>
     typeof text === 'string'
       ? text.replace(/[_-]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())

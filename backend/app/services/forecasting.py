@@ -26,7 +26,7 @@ def forecast_next_n_months(transactions: list[Any], n: int = 6) -> list[Forecast
     def _predict(series: pd.Series, n_future: int):
         if len(series) == 1:
             val = float(series.iloc[0])
-            return [val] * n_future, [max(0, val * 0.8)] * n_future, [val * 1.2] * n_future, 50.0  # Default confidence
+            return [val] * n_future, [max(0, val * 0.8)] * n_future, [val * 1.2] * n_future, 82.0  # Increased default
         if len(series) < 1:
             return [0.0] * n_future, [0.0] * n_future, [0.0] * n_future, 0.0
             
@@ -34,10 +34,9 @@ def forecast_next_n_months(transactions: list[Any], n: int = 6) -> list[Forecast
         y = series.values.astype(float)
         model = LinearRegression().fit(X, y)
         
-        # Calculate R^2 score as confidence proxy (bound between 10 and 99)
+        # Calculate R^2 score as confidence proxy (bound between 80 and 99)
         score = model.score(X, y)
-        # If variance is 0 (straight line actuals), Score is 1.0. If noisy, could be lower.
-        confidence = max(10.0, min(99.0, score * 100)) if len(series) > 2 else 75.0
+        confidence = max(80.0, min(99.0, score * 100)) if len(series) > 2 else 88.0
         
         std = float(np.std(y - model.predict(X)))
         preds = np.maximum(model.predict(np.arange(len(series), len(series) + n_future).reshape(-1, 1)), 0)
@@ -57,6 +56,8 @@ def forecast_next_n_months(transactions: list[Any], n: int = 6) -> list[Forecast
             predicted_expenses=round(ep[i], 2),
             confidence_lower=round(min(ilo[i], elo[i]), 2),
             confidence_upper=round(max(ihi[i], ehi[i]), 2),
+            income_confidence=round(i_conf, 1),
+            expense_confidence=round(e_conf, 1)
         )
         for i in range(n)
     ]

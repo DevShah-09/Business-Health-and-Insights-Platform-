@@ -11,7 +11,7 @@ const CATEGORIES = [
   { value: 'utilities', label: 'Utilities' },
   { value: 'entertainment', label: 'Entertainment' },
   { value: 'healthcare', label: 'Healthcare' },
-  { value: 'professional_services', label: 'Professional Services' },
+  { value: 'Services', label: 'Services' },
   { value: 'marketing', label: 'Marketing' },
   { value: 'salary', label: 'Salary' },
   { value: 'investment', label: 'Investment' },

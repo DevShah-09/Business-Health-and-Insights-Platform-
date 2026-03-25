@@ -47,9 +47,42 @@ export default function Financials() {
 
       
       {/* Page Header */}
-      <div className="px-8 py-6 border-b border-surface-border/30 bg-surface-card/50">
-        <h1 className="text-3xl font-bold text-surface-foreground mb-2">Analytics</h1>
-        <p className="text-sm text-surface-muted-foreground">Detailed financial analysis and KPIs</p>
+      <div className="px-8 py-6 border-b border-surface-border/30 bg-surface-card/50 flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-surface-foreground mb-2">Analytics</h1>
+          <p className="text-sm text-surface-muted-foreground">Detailed financial analysis and KPIs</p>
+        </div>
+        
+        <div className="relative group">
+          <button className="flex items-center gap-2 px-4 py-2 bg-brand text-surface-foreground rounded-lg font-semibold hover:bg-brand/90 transition text-sm">
+            <IndianRupee size={16} />
+            Download Report
+          </button>
+          
+          <div className="absolute right-0 top-full mt-2 w-48 bg-surface-card border border-surface-border/30 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
+            <a 
+              href={`http://127.0.0.1:8000/api/v1/businesses/550e8400-e29b-41d4-a716-446655440001/financials/export?period=weekly`}
+              download
+              className="block w-full px-4 py-3 text-left text-sm text-surface-foreground hover:bg-surface-muted transition border-b border-surface-border/10"
+            >
+              Weekly Report (CSV)
+            </a>
+            <a 
+              href={`http://127.0.0.1:8000/api/v1/businesses/550e8400-e29b-41d4-a716-446655440001/financials/export?period=monthly`}
+              download
+              className="block w-full px-4 py-3 text-left text-sm text-surface-foreground hover:bg-surface-muted transition border-b border-surface-border/10"
+            >
+              Monthly Report (CSV)
+            </a>
+            <a 
+              href={`http://127.0.0.1:8000/api/v1/businesses/550e8400-e29b-41d4-a716-446655440001/financials/export?period=yearly`}
+              download
+              className="block w-full px-4 py-3 text-left text-sm text-surface-foreground hover:bg-surface-muted transition"
+            >
+              Yearly Report (CSV)
+            </a>
+          </div>
+        </div>
       </div>
 
       <main className="p-6 space-y-6 max-w-[1600px] w-full mx-auto">
@@ -130,12 +163,6 @@ export default function Financials() {
                   (cashFlow?.net_cash_flow || 0) > 0 ? 'text-green-400' : 'text-red-400'
                 }`}>
                   ₹{(cashFlow?.net_cash_flow || 0).toLocaleString()}
-                </p>
-              </div>
-              <div className="bg-surface-card p-4 rounded-lg">
-                <p className="text-xs text-surface-muted-foreground mb-1">Avg Daily Flow</p>
-                <p className="text-lg font-bold text-surface-foreground">
-                  ₹{(cashFlow?.average_daily_flow || 0).toFixed(2)}
                 </p>
               </div>
             </div>
@@ -229,8 +256,10 @@ export default function Financials() {
                         {item.percentage}%
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-right text-surface-muted-foreground">
-                      <span className="text-green-400">↓ 2.3%</span>
+                    <td className="px-4 py-3 text-right">
+                      <span className={item.trend >= 0 ? "text-red-400" : "text-green-400"}>
+                        {item.trend >= 0 ? "↑" : "↓"} {Math.abs(item.trend || 0).toFixed(1)}%
+                      </span>
                     </td>
                   </tr>
                 ))}

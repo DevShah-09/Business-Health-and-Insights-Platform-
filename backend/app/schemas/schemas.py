@@ -189,7 +189,6 @@ class CashFlow(BaseModel):
     total_inflow: float
     total_outflow: float
     net_cash_flow: float
-    avg_daily_flow: float
     working_capital: float
 
 class CashFlowTrendItem(BaseModel):
@@ -223,6 +222,7 @@ class CategoryBreakdownItem(BaseModel):
     percentage: float
     transaction_count: int
     average_transaction: float
+    trend: float = 0.0
 
 class ExpenseBreakdown(BaseModel):
     """Complete expense breakdown by category."""

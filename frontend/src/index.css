@@ -60,6 +60,10 @@
     border-color: var(--color-surface-border);
   }
 
+  html {
+    font-size: 112.5%;
+  }
+
   body {
     background: var(--bg-gradient);
     color: var(--surface-foreground);
