@@ -96,7 +96,9 @@ app = FastAPI(
     title="SME Business Health Platform",
     version="1.0.0",
     description="AI-Powered SME Business Health & Insights Platform",
-    lifespan=lifespan
+    lifespan=lifespan,
+    docs_url="/api/v1/docs",
+    openapi_url="/api/v1/openapi.json"
 )
 
 app.add_middleware(
