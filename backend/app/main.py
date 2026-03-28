@@ -3,10 +3,12 @@ main.py — FastAPI application entry point (minimal working version)
 """
 
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from app.api import auth, transactions, businesses, financials, health, forecast, ai_insights, analytics, alerts, chat, simulation, reports
+from app.config.settings import settings
 from app.database.database import init_db, AsyncSessionLocal
 from app.models.user import User
 from app.models.business import Business
@@ -103,7 +105,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_origins=settings.ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -112,7 +114,7 @@ app.add_middleware(
 # Register API routers
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(transactions.router, prefix="/api/v1", tags=["transactions"])
-app.include_router(businesses.router, prefix="/api/v1", tags=["businesses"])
+app.include_router(businesses.router, prefix="/api/v1/businesses", tags=["businesses"])
 app.include_router(financials.router, prefix="/api/v1", tags=["financials"])
 app.include_router(health.router, prefix="/api/v1", tags=["health"])
 app.include_router(forecast.router, prefix="/api/v1", tags=["forecast"])
@@ -122,6 +124,11 @@ app.include_router(alerts.router, prefix="/api/v1", tags=["alerts"])
 app.include_router(chat.router, prefix="/api/v1", tags=["chat"])
 app.include_router(simulation.router, prefix="/api/v1", tags=["simulation"])
 app.include_router(reports.router, prefix="/api/v1", tags=["reports"])
+
+
+@app.get("/")
+async def root():
+    return RedirectResponse(url="/api/v1/docs")
 
 
 @app.get("/api/v1/health")
